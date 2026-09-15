@@ -1,0 +1,101 @@
+const E9 = ({ inputBuffer: g, matchedChannel: i, isVisible: s }) =>
+  !s || !g
+    ? null
+    : Jt.jsx("div", {
+        id: "channel-number-osd",
+        className:
+          "fixed top-6 right-6 z-50 animate-in fade-in zoom-in-95 duration-150 pointer-events-none select-none",
+        children: Jt.jsxs("div", {
+          className:
+            "bg-neutral-950/95 backdrop-blur-2xl border-2 border-red-500/80 rounded-2xl p-4 shadow-2xl shadow-red-950/80 min-w-[240px] flex flex-col items-center",
+          children: [
+            Jt.jsxs("div", {
+              className:
+                "w-full flex items-center justify-between text-neutral-400 text-[11px] uppercase font-mono tracking-wider mb-2 border-b border-white/10 pb-1.5",
+              children: [
+                Jt.jsxs("span", {
+                  className: "flex items-center gap-1.5 text-red-400 font-bold",
+                  children: [
+                    Jt.jsx(s9, { className: "w-3.5 h-3.5" }),
+                    " CHỌN KÊNH",
+                  ],
+                }),
+                Jt.jsx("span", {
+                  className: "text-neutral-400 text-[10px]",
+                  children: "Ấn OK / Enter",
+                }),
+              ],
+            }),
+            Jt.jsx("div", {
+              className: "py-2 flex flex-col items-center justify-center",
+              children: Jt.jsxs("div", {
+                className: "flex items-baseline gap-2",
+                children: [
+                  Jt.jsx("span", {
+                    className: "text-xl font-bold text-neutral-300",
+                    children: "Kênh",
+                  }),
+                  Jt.jsx("span", {
+                    className:
+                      "font-mono text-5xl font-black text-white tracking-wider drop-shadow-[0_0_16px_rgba(239,68,68,0.9)]",
+                    children: g,
+                  }),
+                  Jt.jsx("span", {
+                    className: "text-2xl font-bold text-red-500 animate-pulse",
+                    children: "...",
+                  }),
+                ],
+              }),
+            }),
+            Jt.jsx("div", {
+              className: "w-full mt-2 text-center",
+              children: i
+                ? Jt.jsxs("div", {
+                    className:
+                      "flex items-center justify-center gap-2 px-3 py-1.5 bg-red-950/60 border border-red-500/40 rounded-xl",
+                    children: [
+                      (() => {
+                        const c = /thp\s*3|hải\s*phòng.*3/i.test(
+                          i.cleanName || i.name || "",
+                        )
+                          ? "https://raw.githubusercontent.com/vuminhthanh12/Logo/refs/heads/main/THP3.png"
+                          : i.logo;
+                        return c
+                          ? Jt.jsx("img", {
+                              src: c,
+                              alt: i.cleanName,
+                              className:
+                                "w-5 h-5 object-contain rounded shrink-0 bg-black/40",
+                              referrerPolicy: "no-referrer",
+                              onError: (p) => {
+                                p.target.style.display = "none";
+                              },
+                            })
+                          : Jt.jsx(OP, {
+                              className: "w-4 h-4 text-red-400 shrink-0",
+                            });
+                      })(),
+                      Jt.jsx("span", {
+                        className:
+                          "text-xs font-bold text-white truncate max-w-[170px]",
+                        children: i.cleanName,
+                      }),
+                    ],
+                  })
+                : Jt.jsxs("div", {
+                    className:
+                      "px-3 py-1.5 bg-neutral-900/80 border border-neutral-700/50 rounded-xl text-[11px] text-neutral-400 font-medium truncate",
+                    children: ["Chưa có kênh số ", g],
+                  }),
+            }),
+            Jt.jsx("div", {
+              className:
+                "w-full bg-white/10 h-1.5 rounded-full mt-3 overflow-hidden",
+              children: Jt.jsx("div", {
+                className:
+                  "bg-gradient-to-r from-red-600 via-red-500 to-rose-400 h-full w-full animate-[pulse_0.8s_infinite]",
+              }),
+            }),
+          ],
+        }),
+      });

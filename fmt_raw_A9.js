@@ -1,0 +1,179 @@
+function A9({
+  isDrawerOpen: g,
+  setIsDrawerOpen: i,
+  channels: s,
+  focusedChannelIndex: o,
+  setFocusedChannelIndex: c,
+  onSelectChannel: p,
+  onShowExitToast: v,
+  onExitApp: f,
+  onNumberInput: S,
+}) {
+  const E = Pt.useRef(0),
+    A = Pt.useRef(""),
+    R = Pt.useRef(null),
+    L = (P) => {
+      const U = parseInt(P, 10);
+      if (isNaN(U) || U <= 0) return { channel: null, chIndex: -1 };
+      for (let G = 0; G < s.length; G++)
+        if (s[G].channelNumber === U) return { channel: s[G], chIndex: G };
+      for (let G = 0; G < s.length; G++)
+        if (s[G].id === P || s[G].id === `ch_${P}`)
+          return { channel: s[G], chIndex: G };
+      return U <= s.length
+        ? { channel: s[U - 1], chIndex: U - 1 }
+        : { channel: null, chIndex: -1 };
+    },
+    k = () => {
+      const P = A.current;
+      if (!P) return;
+      const { channel: U, chIndex: G } = L(P);
+      (U && (c(G), p(U), i(!1)),
+        (A.current = ""),
+        R.current && (clearTimeout(R.current), (R.current = null)),
+        S && S("", null, !1));
+    };
+  Pt.useEffect(() => {
+    const P = (U) => {
+      if (
+        document.activeElement &&
+        (document.activeElement.tagName === "INPUT" ||
+          document.activeElement.tagName === "TEXTAREA")
+      ) {
+        U.key === "Escape" && document.activeElement.blur();
+        return;
+      }
+      const G = U.keyCode,
+        K = U.key,
+        W = U.code || "",
+        z = K === "ArrowUp" || G === 19 || G === 38,
+        se = K === "ArrowDown" || G === 20 || G === 40,
+        X = K === "ArrowLeft" || G === 21 || G === 37,
+        de = K === "ArrowRight" || G === 22 || G === 39,
+        w =
+          K === "Enter" ||
+          K === " " ||
+          K === "Select" ||
+          K === "Ok" ||
+          G === 13 ||
+          G === 23 ||
+          G === 66 ||
+          G === 10001 ||
+          W === "Enter" ||
+          W === "NumpadEnter" ||
+          W === "Select",
+        le =
+          K === "Escape" ||
+          K === "Backspace" ||
+          K === "GoBack" ||
+          G === 27 ||
+          G === 4 ||
+          G === 10009 ||
+          G === 461 ||
+          G === 8,
+        he = K === "ChannelUp" || K === "PageUp" || G === 33 || G === 166,
+        te = K === "ChannelDown" || K === "PageDown" || G === 34 || G === 167;
+      if (w) {
+        (U.preventDefault(),
+          A.current &&
+            ((A.current = ""),
+            R.current && clearTimeout(R.current),
+            S && S("", null, !1)),
+          g ? s[o] && (p(s[o]), i(!1)) : i(!0));
+        return;
+      }
+      if (le) {
+        if ((U.preventDefault(), A.current)) {
+          ((A.current = ""),
+            R.current && clearTimeout(R.current),
+            S && S("", null, !1));
+          return;
+        }
+        if (g) i(!1);
+        else {
+          const re = Date.now();
+          re - E.current < 2e3 ? f() : ((E.current = re), v());
+        }
+        return;
+      }
+      if (
+        !w &&
+        !le &&
+        !z &&
+        !se &&
+        !X &&
+        !de &&
+        ((K >= "0" && K <= "9") ||
+          (W.startsWith("Digit") && !isNaN(Number(W.replace("Digit", "")))) ||
+          (W.startsWith("Numpad") && !isNaN(Number(W.replace("Numpad", "")))) ||
+          (G >= 48 && G <= 57) ||
+          (G >= 96 && G <= 105))
+      ) {
+        U.preventDefault();
+        let re = "";
+        if (
+          (K >= "0" && K <= "9"
+            ? (re = K)
+            : W.startsWith("Digit")
+              ? (re = W.replace("Digit", ""))
+              : W.startsWith("Numpad")
+                ? (re = W.replace("Numpad", ""))
+                : G >= 48 && G <= 57
+                  ? (re = String(G - 48))
+                  : G >= 96 && G <= 105 && (re = String(G - 96)),
+          !re)
+        )
+          return;
+        const ge = (A.current + re).slice(0, 4);
+        A.current = ge;
+        const { channel: Ye } = L(ge);
+        (S && S(ge, Ye, !0),
+          R.current && clearTimeout(R.current),
+          (R.current = setTimeout(() => {
+            k();
+          }, 1800)));
+        return;
+      }
+      if (z) {
+        (U.preventDefault(), g ? c((re) => Math.max(0, re - 1)) : i(!0));
+        return;
+      }
+      if (se) {
+        (U.preventDefault(),
+          g ? c((re) => Math.min(s.length - 1, re + 1)) : i(!0));
+        return;
+      }
+      if (X) {
+        (U.preventDefault(), g ? c((re) => Math.max(0, re - 5)) : i(!0));
+        return;
+      }
+      if (de) {
+        (U.preventDefault(),
+          g ? c((re) => Math.min(s.length - 1, re + 5)) : i(!0));
+        return;
+      }
+      if (he) {
+        (U.preventDefault(),
+          c((re) => {
+            const ge = (re + 1) % (s.length || 1);
+            return (s[ge] && p(s[ge]), ge);
+          }));
+        return;
+      }
+      if (te) {
+        (U.preventDefault(),
+          c((re) => {
+            const ge = (re - 1 + (s.length || 1)) % (s.length || 1);
+            return (s[ge] && p(s[ge]), ge);
+          }));
+        return;
+      }
+    };
+    return (
+      window.addEventListener("keydown", P, { passive: !1 }),
+      () => {
+        window.removeEventListener("keydown", P);
+      }
+    );
+  }, [g, i, s, o, c, p, v, f]);
+}

@@ -1,0 +1,6 @@
+{
+  "name": "HT TV",
+  "description": "Ứng dụng truyền hình HT TV tối ưu cho Android TV, Android TV Box và Mobile hỗ trợ HLS, MPD, Widevine & ClearKey DRM.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

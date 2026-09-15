@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="amber_500">#FFF59E0B</color>
+    <color name="amber_600">#FFD97706</color>
+    <color name="neutral_900">#FF171717</color>
+    <color name="neutral_800">#FF262626</color>
+    <color name="drawer_bg">#D90F0F11</color>
+    <color name="item_focused">#33F59E0B</color>
+    <color name="text_muted">#FFA3A3A3</color>
+    <color name="badge_red">#FFEF4444</color>
+</resources>

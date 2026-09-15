@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">HT TV</string>
+    <string name="loading_channels">Đang tải danh sách kênh…</string>
+    <string name="loading_stream">Đang kết nối luồng phát…</string>
+    <string name="playback_error">Không thể phát kênh này. Đang thử nguồn khác…</string>
+    <string name="press_again_to_exit">Nhấn Back lần nữa để thoát HT TV</string>
+    <string name="no_channels">Không tìm thấy kênh nào khả dụng</string>
+    <string name="retry">Thử lại</string>
+</resources>
