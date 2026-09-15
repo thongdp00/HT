@@ -1,5 +1,7 @@
 package com.httv.tv.ui
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -20,6 +22,7 @@ import com.httv.tv.databinding.ActivityMainBinding
 import com.httv.tv.model.Category
 import com.httv.tv.model.Channel
 import com.httv.tv.player.PlayerManager
+import com.httv.tv.tv.TvHomeScreenManager
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -31,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private var allChannels = listOf<Channel>()
     private var categories = listOf<Category>()
     private var currentChannelIndex = 0
+    private var pendingChannelTarget: String? = null
 
     private val categoryAdapter by lazy { CategoryAdapter(::onCategorySelected) }
     private val channelAdapter by lazy { ChannelAdapter(::onChannelSelected) }
@@ -49,9 +53,93 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         channelRepository = ChannelRepository(this)
+        handleIncomingIntent(intent)
         setupViews()
         setupPlayer()
         loadChannels()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIncomingIntent(intent)
+    }
+
+    private fun handleIncomingIntent(intent: Intent?) {
+        if (intent == null) return
+
+        val target = intent.getStringExtra("channel_id")
+            ?: intent.getStringExtra("channel_name")
+            ?: intent.data?.getQueryParameter("channel")
+            ?: intent.data?.getQueryParameter("ch")
+            ?: intent.data?.lastPathSegment
+
+        if (!target.isNullOrBlank()) {
+            pendingChannelTarget = target
+            if (allChannels.isNotEmpty()) {
+                selectAndPlayChannelTarget(target)
+            }
+        }
+    }
+
+    private fun selectAndPlayChannelTarget(target: String): Boolean {
+        val cleanTarget = target.trim().lowercase().replace("-", "").replace("_", "").replace(" ", "")
+
+        // 1. Exact ID match
+        var match = allChannels.find { it.id.equals(target, ignoreCase = true) }
+
+        // 2. Exact cleanName match
+        if (match == null) {
+            match = allChannels.find { it.cleanName.equals(target, ignoreCase = true) }
+        }
+
+        // 3. Normalized ID match
+        if (match == null) {
+            match = allChannels.find {
+                it.id.lowercase().replace("-", "").replace("_", "").replace(" ", "") == cleanTarget
+            }
+        }
+
+        // 4. Normalized cleanName match
+        if (match == null) {
+            match = allChannels.find {
+                it.cleanName.lowercase().replace("-", "").replace("_", "").replace(" ", "") == cleanTarget
+            }
+        }
+
+        // 5. Pattern match for VTV1..VTV10 (e.g. "vtv1", "vtv2", "vtv10")
+        if (match == null) {
+            val vtvRegex = Regex("""vtv(10|[1-9])""", RegexOption.IGNORE_CASE)
+            val vtvNumMatch = vtvRegex.find(cleanTarget)
+            if (vtvNumMatch != null) {
+                val num = vtvNumMatch.groupValues[1]
+                val vtvKey = "vtv$num"
+                match = allChannels.find { ch ->
+                    val chNorm = ch.cleanName.lowercase().replace(" ", "")
+                    chNorm == vtvKey || chNorm.startsWith("${vtvKey}hd") || ch.id.lowercase().startsWith(vtvKey)
+                }
+            }
+        }
+
+        // 6. Substring match fallback
+        if (match == null) {
+            match = allChannels.find {
+                it.cleanName.contains(target, ignoreCase = true) || it.name.contains(target, ignoreCase = true)
+            }
+        }
+
+        if (match != null) {
+            val index = allChannels.indexOf(match)
+            if (index != -1) {
+                currentChannelIndex = index
+                playChannel(match)
+                hideDrawer()
+                Toast.makeText(this, "Đang mở: ${match.cleanName}", Toast.LENGTH_SHORT).show()
+                pendingChannelTarget = null
+                return true
+            }
+        }
+        return false
     }
 
     private fun setupViews() {
@@ -127,9 +215,20 @@ class MainActivity : AppCompatActivity() {
                 categoryAdapter.submitList(categories)
                 channelAdapter.submitList(channels)
 
-                // Auto-play first channel
-                currentChannelIndex = 0
-                playChannel(allChannels[0])
+                // Publish VTV1..VTV10 channels to Android TV Home Screen
+                TvHomeScreenManager.publishVtvChannels(this@MainActivity, channels)
+
+                // If launched from Home Screen card deep link, auto-select that channel
+                var autoPlayed = false
+                val pending = pendingChannelTarget
+                if (!pending.isNullOrBlank()) {
+                    autoPlayed = selectAndPlayChannelTarget(pending)
+                }
+
+                if (!autoPlayed) {
+                    currentChannelIndex = 0
+                    playChannel(allChannels[0])
+                }
             } else {
                 Toast.makeText(this@MainActivity, R.string.no_channels, Toast.LENGTH_LONG).show()
             }

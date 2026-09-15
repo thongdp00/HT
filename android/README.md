@@ -10,6 +10,11 @@ Mã nguồn ứng dụng **HT TV** viết bằng **Kotlin** dành cho **Android 
   - Nhận diện remote TV (D-Pad): Phím Lên/Xuống chuyển kênh, phím OK/Enter bật danh sách kênh, phím Trái mở danh mục.
   - Hỗ trợ nhập số kênh trực tiếp từ Remote (bàn phím số 0-9) với OSD hiển thị to rõ, tự động chuyển kênh sau 1.5 giây.
   - Phím Back: Đóng danh sách kênh hoặc nhấn 2 lần để thoát ứng dụng.
+- **Tích hợp kênh Home Screen Android TV & Google TV (VTV1 đến VTV10):**
+  - Hiển thị hàng kênh xem trước (Preview Channels Row) mang tên **"Kênh VTV - HT TV"** ngay tại màn hình chính Home Screen của Android TV / Google TV.
+  - Tự động quét và đọc đúng tên kênh thực tế (`cleanName`) và URL logo chính thức từ các card trong danh sách kênh của HT TV.
+  - Hỗ trợ cơ chế **Deep Linking** (`httv://channel/vtv1` đến `vtv10`): Khi bấm vào bất kỳ thẻ kênh VTV nào từ màn hình chính Home Screen, ứng dụng sẽ khởi động và tự động phát ngay kênh đó.
+  - Tự động đồng bộ và làm mới danh sách kênh khi ứng dụng khởi động (`INITIALIZE_PROGRAMS` hoặc `BOOT_COMPLETED`).
 - **Engine phát video Google Media3 (ExoPlayer):**
   - Tương thích đa định dạng: **HLS** (`.m3u8`), **MPEG-DASH** (`.mpd`), **MPEG-TS** (`.ts`).
   - Hỗ trợ giải mã bản quyền số **ClearKey DRM** trực tiếp trên thiết bị.

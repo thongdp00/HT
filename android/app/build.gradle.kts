@@ -49,8 +49,9 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.cardview:cardview:1.0.0")
 
-    // Android TV / Leanback
+    // Android TV / Leanback & Home Screen Channels
     implementation("androidx.leanback:leanback:1.0.0")
+    implementation("androidx.tvprovider:tvprovider:1.0.0")
 
     // Google Media3 (ExoPlayer)
     val media3Version = "1.3.1"
